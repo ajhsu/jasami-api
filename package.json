@@ -15,7 +15,7 @@
     "start:prod": "./node_modules/.bin/pm2 start ecosystem.config.js",
     "stop:prod": "./node_modules/.bin/pm2 delete ecosystem.config.js",
     "log": "./node_modules/.bin/pm2 logs 'jasami-api'",
-    "test": "./node_modules/.bin/tape -r babel-register tests/**/*.spec.js"
+    "test": "./node_modules/.bin/tape -r babel-register ./src/**/*.spec.js"
   },
   "dependencies": {
     "cors": "^2.7.1",
