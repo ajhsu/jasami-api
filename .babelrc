@@ -4,6 +4,9 @@
     "es2015"
   ],
   "plugins": [
-    "add-module-exports"
+    "add-module-exports",
+    "syntax-async-functions",
+    "transform-regenerator",
+    "transform-object-rest-spread"
   ]
 }
