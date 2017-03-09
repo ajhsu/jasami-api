@@ -3,8 +3,7 @@ import cors from 'cors';
 import requestPromise from 'request-promise';
 import morgan from 'morgan';
 import config from './config';
-import favicon from './middlewares/favicon';
-import meal from './middlewares/meal';
+import routes from './middlewares/routes';
 
 class Server {
   constructor() {
@@ -16,8 +15,7 @@ class Server {
     this.express = express();
     this.express.use(cors());
     this.express.use(morgan('dev'));
-    this.express.use(favicon);
-    this.express.use(meal);
+    this.express.use(routes);
   }
   boot() {
     this.expressRunningInstance = this.express.listen(config.port, () => {
