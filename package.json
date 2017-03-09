@@ -16,7 +16,7 @@
     "stop:prod": "./node_modules/.bin/pm2 delete ecosystem.config.js",
     "log": "./node_modules/.bin/pm2 logs 'jasami-api'",
     "pretest": "npm run build",
-    "test": "./node_modules/.bin/tape -r ./dist/**/*.spec.js"
+    "test": "./node_modules/.bin/tape -r ./dist/**/*.spec.js | ./node_modules/.bin/tap-spec"
   },
   "dependencies": {
     "cors": "^2.7.1",
@@ -36,6 +36,7 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-0": "^6.22.0",
     "pm2": "^2.4.2",
+    "tap-spec": "^4.1.1",
     "tape": "^4.6.3"
   }
 }
