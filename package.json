@@ -15,7 +15,8 @@
     "start:prod": "./node_modules/.bin/pm2 start ecosystem.config.js",
     "stop:prod": "./node_modules/.bin/pm2 delete ecosystem.config.js",
     "log": "./node_modules/.bin/pm2 logs 'jasami-api'",
-    "test": "./node_modules/.bin/tape -r babel-register ./src/**/*.spec.js"
+    "pretest": "npm run build",
+    "test": "./node_modules/.bin/tape -r ./dist/**/*.spec.js"
   },
   "dependencies": {
     "cors": "^2.7.1",
@@ -29,7 +30,6 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-stage-0": "^6.22.0",
-    "babel-register": "^6.23.0",
     "pm2": "^2.4.2",
     "tape": "^4.6.3"
   }
