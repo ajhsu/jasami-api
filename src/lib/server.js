@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import requestPromise from 'request-promise';
 import morgan from 'morgan';
-import config from './config';
 import routes from './middlewares/routes';
 
 class Server {
@@ -17,9 +16,9 @@ class Server {
     this.express.use(morgan('dev'));
     this.express.use(routes);
   }
-  boot() {
-    this.expressRunningInstance = this.express.listen(config.port, () => {
-      console.log(`Node-server start to listen on port ${config.port}..`);
+  boot({ port = 3000 }) {
+    this.expressRunningInstance = this.express.listen(port, () => {
+      console.log(`Node-server start to listen on port ${port}..`);
     });
   }
   shutdown() {
