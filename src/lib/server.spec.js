@@ -5,18 +5,22 @@ import Server from './server';
 import requestPromise from 'request-promise';
 
 test('Basic server operation', async t => {
-  t.plan(1);
   // arrange
-  const s = new Server();
-  s.boot();
-  // assert
-  const expected = { status: 'good' };
+  const server = new Server();
+  server.boot();
   // act
   const response = await requestPromise({
     uri: 'http://127.0.0.1:3002/health',
+    resolveWithFullResponse: true,
     json: true
   });
-  t.deepEqual(response, expected, '/health should be good');
+  t.equal(response.statusCode, 200, '/health should return 200');
+  t.deepEqual(
+    response.body,
+    { status: 'good' },
+    '/health should return {status: good} in json format'
+  );
   // teardown
-  s.shutdown();
+  server.shutdown();
+  t.end();
 });
