@@ -40,6 +40,7 @@ test('Connect to MongoDB', async t => {
     .find({}, { _id: 0, name: 1 })
     .toArray();
   console.log(result);
+  t.equal(3, result.length, 'count of documents should match expected');
 
   // Drop testing database
   await db.dropDatabase();
