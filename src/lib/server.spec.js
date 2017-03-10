@@ -5,6 +5,9 @@ import Ajv from 'ajv';
 import Server from './server';
 import requestPromise from 'request-promise';
 
+// MongoDB Driver
+const mongo = require('mongodb').MongoClient;
+
 // JSON-Schema validator
 const ajv = new Ajv();
 
@@ -16,6 +19,33 @@ const GET = url => {
     json: true
   });
 };
+
+test('Connect to MongoDB', async t => {
+  const config = {
+    dbAddress: 'localhost',
+    dbPort: 27017,
+    dbName: 'jasami_test_db'
+  };
+  const db = await mongo.connect(
+    `mongodb://${config.dbAddress}:${config.dbPort}/${config.dbName}`
+  );
+
+  // Drop previous database
+  await db.dropDatabase();
+  // Create collection
+  await db.createCollection('restaurants');
+  await db.collection('restaurants').insert(require('./mock-db.js'));
+  const result = await db
+    .collection('restaurants')
+    .find({}, { _id: 0, name: 1 })
+    .toArray();
+  console.log(result);
+
+  // Drop testing database
+  await db.dropDatabase();
+  db.close();
+  t.end();
+});
 
 test('Basic server operation', async t => {
   // arrange
