@@ -1,8 +1,12 @@
 require('babel-polyfill');
 
 import test from 'tape';
+import Ajv from 'ajv';
 import Server from './server';
 import requestPromise from 'request-promise';
+
+// JSON-Schema validator
+const ajv = new Ajv();
 
 // Wrapped method that makeing a GET request and return in Promise
 const GET = url => {
@@ -51,14 +55,17 @@ test('Basic End-points operation', async t => {
   const server = new Server();
   server.boot({ port: PORT });
 
-  // act
+  // Endpoint: /restaurants
   const restaurantResponse = await GET(`http://127.0.0.1:${PORT}/restaurants`);
   t.equal(restaurantResponse.statusCode, 200, '/restaurants should return 200');
-  t.equal(
-    restaurantResponse.body.filter(i => i.name === '紅成小館').length,
-    1,
-    'GET /restaurants should return a restuarant list'
+
+  // json-schema validate
+  const valid = ajv.validate(
+    require('./schemas/restaurants.json'),
+    restaurantResponse.body
   );
+  t.ok(valid, '/restaurants should match its json-schema');
+  if (!valid) console.log(ajv.errors);
 
   // teardown
   server.shutdown();
