@@ -2,11 +2,15 @@ const fakeDatabase = [
   {
     name: '紅成小館',
     location: {
-      address: '光棚尾端左側',
+      alias: '光棚尾端左側',
+      address: '台北市南港區三重路19之7號',
       coordinates: {
         lat: 25.0561558,
         lng: 121.6120222
       }
+    },
+    contact: {
+      phone: '0921-030710'
     },
     priceRange: {
       from: 30,
@@ -131,13 +135,93 @@ const fakeDatabase = [
     ]
   },
   {
-    name: '甘泉魚麵',
+    name: '蜥蜴咖哩',
     location: {
-      address: '光棚入口右側',
+      alias: '夾層出口處',
+      address: '台北市南港區南港路一段136巷6弄3號',
       coordinates: {
         lat: 25.0561558,
         lng: 121.6120222
       }
+    },
+    contact: {
+      phone: '02-2789-2148'
+    },
+    notes: ['炸雞買十送一，五份有外送', '外帶主餐優惠 10 元', '園區主餐五個以上外送，每個優惠 10 元，需在 11AM 前訂餐'],
+    priceRange: {
+      from: 120,
+      to: 150
+    },
+    menu: [
+      {
+        name: '雙拼咖哩飯',
+        price: 150,
+        tags: ['飯類', '牛肉', '雞肉', '咖哩']
+      },
+      {
+        name: '牛肉咖哩飯',
+        price: 150,
+        tags: ['飯類', '牛肉', '咖哩']
+      },
+      {
+        name: '炸雞咖哩飯',
+        price: 150,
+        tags: ['飯類', '雞肉', '咖哩']
+      },
+      {
+        name: '雞腿咖哩飯',
+        price: 150,
+        tags: ['飯類', '雞肉', '咖哩']
+      },
+      {
+        name: '野菜咖哩飯',
+        price: 150,
+        tags: ['飯類', '咖哩']
+      },
+      {
+        name: '蜥蜴炸雞',
+        price: 60,
+        tags: ['小菜', '雞肉']
+      },
+      {
+        name: '開胃小菜',
+        price: 30,
+        tags: ['小菜']
+      },
+      {
+        name: '可樂',
+        price: 30,
+        tags: ['飲料']
+      },
+      {
+        name: '十六茶',
+        price: 35,
+        tags: ['飲料']
+      },
+      {
+        name: '純蘋果汁',
+        price: 35,
+        tags: ['飲料']
+      },
+      {
+        name: '可爾必思',
+        price: 35,
+        tags: ['飲料']
+      }
+    ]
+  },
+  {
+    name: '甘泉魚麵',
+    location: {
+      alias: '光棚入口右側',
+      address: '台北市南港區三重路19-4號',
+      coordinates: {
+        lat: 25.0561558,
+        lng: 121.6120222
+      }
+    },
+    contact: {
+      phone: '02-2655-2221'
     },
     priceRange: {
       from: 100,
