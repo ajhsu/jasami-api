@@ -9,7 +9,7 @@
     "url": "git@github.com:ajhsu/jasami-api.git"
   },
   "scripts": {
-    "clone-json-schema": "mkdir -p ./dist/lib/schemas && cp ./src/lib/schemas/*.json ./dist/lib/schemas/",
+    "clone-json-schema": "mkdir -p ./dist/lib/schemas && cp -r ./src/lib/schemas ./dist/lib",
     "build": "rm -rf ./dist && mkdir -p ./dist && ./node_modules/.bin/babel src --out-dir ./dist",
     "postbuild": "npm run clone-json-schema",
     "prestart": "npm run build",

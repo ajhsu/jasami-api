@@ -16,8 +16,48 @@ const GET = url => {
   return requestPromise({
     uri: url,
     resolveWithFullResponse: true,
+    // Disable auto rejection if is not 2xx
+    simple: false,
     json: true
   });
+};
+const POST = (url, body = {}) => {
+  return requestPromise({
+    method: 'POST',
+    uri: url,
+    body: body,
+    resolveWithFullResponse: true,
+    // Disable auto rejection if is not 2xx
+    simple: false,
+    json: true
+  });
+};
+
+const createTestingDb = async () => {
+  db.init({
+    address: 'localhost',
+    port: 27017,
+    dbName: 'jasami_test_db'
+  });
+  await db.connect();
+  // Drop previous database
+  await db.query.dropDatabase();
+  // Create collection
+  await db.query.createCollection('restaurants');
+  await db.query.collection('restaurants').insert(require('./mock-db.js'));
+  db.close();
+};
+
+const dropTestingDb = async () => {
+  db.init({
+    address: 'localhost',
+    port: 27017,
+    dbName: 'jasami_test_db'
+  });
+  await db.connect();
+  // Drop previous database
+  await db.query.dropDatabase();
+  db.close();
 };
 
 test('Connect to MongoDB', async t => {
@@ -78,19 +118,7 @@ test('Basic server operation', async t => {
 });
 
 test('Basic End-points operation', async t => {
-  db.init({
-    address: 'localhost',
-    port: 27017,
-    dbName: 'jasami_test_db'
-  });
-  await db.connect();
-
-  // Drop previous database
-  await db.query.dropDatabase();
-  // Create collection
-  await db.query.createCollection('restaurants');
-  await db.query.collection('restaurants').insert(require('./mock-db.js'));
-  db.close();
+  await createTestingDb();
 
   // arrange
   const PORT = 3001;
@@ -99,22 +127,78 @@ test('Basic End-points operation', async t => {
   await server.boot({ port: PORT });
 
   // Endpoint: /restaurants
-  const restaurantResponse = await GET(`http://127.0.0.1:${PORT}/restaurants`);
+  const readRestaurantResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurants`
+  );
   t.equal(
-    restaurantResponse.statusCode,
+    readRestaurantResponse.statusCode,
     HTTPStatus.OK,
     '/restaurants should return 200'
   );
 
   // json-schema validate
-  const valid = ajv.validate(
-    require('./schemas/restaurants.json'),
-    restaurantResponse.body
+  t.ok(
+    ajv.validate(
+      require('./schemas/restaurants/get/200.json'),
+      readRestaurantResponse.body
+    ),
+    '/restaurants should match its json-schema'
   );
-  t.ok(valid, '/restaurants should match its json-schema');
-  if (!valid) console.log(ajv.errors);
+
+  const fakeBody = {
+    name: `測試商店${new Date().getTime()}`,
+    location: {
+      alias: '光棚入口右側',
+      address: '台北市南港區三重路19-4號',
+      coordinates: {
+        lat: 25.0561558,
+        lng: 121.6120222
+      }
+    },
+    contact: {
+      phone: '02-2655-2221'
+    },
+    priceRange: {
+      from: 100,
+      to: 240
+    }
+  };
+  const createRestaurantResponse = await POST(
+    `http://127.0.0.1:${PORT}/restaurant`,
+    { name: `測試商店${new Date().getTime()}` }
+  );
+  t.equal(
+    createRestaurantResponse.statusCode,
+    HTTPStatus.CREATED,
+    '/restaurants should return 201 if body is valid'
+  );
+  t.ok(
+    ajv.validate(
+      require('./schemas/restaurant/post/201.json'),
+      createRestaurantResponse.body
+    ),
+    '/restaurant response should match its json-schema when created'
+  );
+
+  const createRestaurantFailResponse = await POST(
+    `http://127.0.0.1:${PORT}/restaurant`,
+    { illegalBody: `測試商店${new Date().getTime()}` }
+  );
+  t.equal(
+    createRestaurantFailResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurants should return 400 if body is invalid'
+  );
+  t.ok(
+    ajv.validate(
+      require('./schemas/restaurant/post/400.json'),
+      createRestaurantFailResponse.body
+    ),
+    '/restaurant response should match its json-schema when creating fail'
+  );
 
   // teardown
   server.shutdown();
+  await dropTestingDb();
   t.end();
 });

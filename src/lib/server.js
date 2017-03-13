@@ -28,11 +28,12 @@ class Server {
   }
   boot({ port = 3000 }) {
     return new Promise((y, n) => {
-      database.init({
+      const mongodbConfig = {
         address: 'localhost',
         port: 27017,
         dbName: 'jasami_test_db'
-      });
+      };
+      database.init(mongodbConfig);
       database
         .connect()
         .then(() => {

@@ -1,6 +1,11 @@
 require('babel-polyfill');
 
 import db from '../database';
+import HTTPStatus from 'http-status';
+import Ajv from 'ajv';
+
+// JSON-Schema validator
+const ajv = new Ajv();
 
 // GET /restaurants
 export const getAllRestaurants = async (req, res, next) => {
@@ -8,17 +13,31 @@ export const getAllRestaurants = async (req, res, next) => {
     .collection('restaurants')
     .find({})
     .toArray();
-  res.status(200).json(restaurants);
+  res.status(HTTPStatus.OK).json(restaurants);
 };
 // GET /restaurant
 export const getRestaurtantById = (req, res, next) => {
   const restaurantId = req.params.restaurantId;
-  res.end('ok');
+  res.status(HTTPStatus.OK).end('ok');
 };
 // POST /restaurant
-export const addRestaurtant = (req, res, next) => {
-  console.log(req.payload);
-  res.json({ status: 'success' });
+export const addRestaurtant = async (req, res, next) => {
+  // json-schema validate
+  if (
+    !ajv.validate(require('../schemas/restaurant/post/request.json'), req.body)
+  ) {
+    res
+      .status(HTTPStatus.BAD_REQUEST)
+      .json({ errors: ajv.errors.map(e => e.message) });
+    return;
+  }
+
+  const insertResult = await db.query
+    .collection('restaurants')
+    .insertOne(req.body);
+  res
+    .status(HTTPStatus.CREATED)
+    .json({ restaurantId: insertResult.insertedId });
 };
 // PUT /restaurant
 export const updateRestaurtantById = (restaurantId, payload) => {};
