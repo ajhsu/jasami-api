@@ -4,6 +4,7 @@ import requestPromise from 'request-promise';
 import morgan from 'morgan';
 import routes from './middlewares/routes';
 import database from './database';
+import bodyParser from 'body-parser';
 
 class Server {
   constructor() {
@@ -13,6 +14,14 @@ class Server {
   }
   init() {
     this.express = express();
+    // to support JSON-encoded bodies
+    this.express.use(bodyParser.json()); 
+    // to support URL-encoded bodies
+    this.express.use(
+      bodyParser.urlencoded({
+        extended: true
+      })
+    );
     this.express.use(cors());
     this.express.use(morgan('dev'));
     this.express.use(routes);

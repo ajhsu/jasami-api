@@ -21,6 +21,7 @@
     "test": "./node_modules/.bin/tape -r ./dist/**/*.spec.js | ./node_modules/.bin/tap-spec"
   },
   "dependencies": {
+    "body-parser": "^1.17.1",
     "cors": "^2.7.1",
     "express": "^4.13.3",
     "http-status": "^1.0.1",
