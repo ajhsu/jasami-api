@@ -6,43 +6,12 @@ import Server from './server';
 import requestPromise from 'request-promise';
 import HTTPStatus from 'http-status';
 import db from './database';
+import { GET, POST, PUT } from './utils/restful-test';
 
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
 // JSON-Schema validator
 const ajv = new Ajv();
-// Wrapped method that makeing a GET request and return in Promise
-const GET = url => {
-  return requestPromise({
-    uri: url,
-    resolveWithFullResponse: true,
-    // Disable auto rejection if is not 2xx
-    simple: false,
-    json: true
-  });
-};
-const POST = (url, body = {}) => {
-  return requestPromise({
-    method: 'POST',
-    uri: url,
-    body: body,
-    resolveWithFullResponse: true,
-    // Disable auto rejection if is not 2xx
-    simple: false,
-    json: true
-  });
-};
-const PUT = (url, body = {}) => {
-  return requestPromise({
-    method: 'PUT',
-    uri: url,
-    body: body,
-    resolveWithFullResponse: true,
-    // Disable auto rejection if is not 2xx
-    simple: false,
-    json: true
-  });
-};
 
 const createTestingDb = async () => {
   db.init({
