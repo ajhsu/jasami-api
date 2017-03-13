@@ -185,7 +185,7 @@ test('Basic End-points operation', async t => {
   t.equal(
     readRestaurantResponse.body.name,
     newRestaurantName,
-    '/restaurant/<restaurantId> should return response which matches the same name just given'
+    '/restaurant/<restaurantId> should return response which matches the same name just created'
   );
   t.ok(
     ajv.validate(
@@ -204,11 +204,25 @@ test('Basic End-points operation', async t => {
     '/restaurants should return 404 if resource is not found'
   );
 
+  const updatedRestaurantName = `測試更新商店${new Date().getTime()}`;
   const updateRestaurantResponse = await PUT(
     `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
-    { name: `測試更新商店${new Date().getTime()}` }
+    { name: updatedRestaurantName }
   );
-  t.equal(updateRestaurantResponse.statusCode, HTTPStatus.OK, '/restaurant should return 200 if resource was updated');
+  t.equal(
+    updateRestaurantResponse.statusCode,
+    HTTPStatus.OK,
+    '/restaurant should return 200 if resource was updated'
+  );
+
+  const readUpdatedRestaurantResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
+  );
+  t.equal(
+    readUpdatedRestaurantResponse.body.name,
+    updatedRestaurantName,
+    '/restaurant/<restaurantId> should return response which matches the same name just updated'
+  );
 
   const createRestaurantFailResponse = await POST(
     `http://127.0.0.1:${PORT}/restaurant`,
