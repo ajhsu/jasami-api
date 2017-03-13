@@ -176,6 +176,13 @@ test('Basic End-points operation', async t => {
     newRestaurantName,
     '/restaurant/<restaurantId> should return response which matches the same name just given'
   );
+  t.ok(
+    ajv.validate(
+      require('./schemas/restaurant/get/200.json'),
+      readRestaurantResponse.body
+    ),
+    '/restaurant response should match its json-schema'
+  );
 
   const readRestaurantNotFoundResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID`
