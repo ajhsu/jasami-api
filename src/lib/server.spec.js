@@ -2,6 +2,8 @@ require('babel-polyfill');
 
 import test from 'tape';
 import Ajv from 'ajv';
+// JSON-Schema validator
+const ajv = new Ajv();
 import Server from './server';
 import requestPromise from 'request-promise';
 import HTTPStatus from 'http-status';
@@ -11,12 +13,10 @@ import { GET, POST, PUT } from './utils/restful-test';
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
 const mongoConfig = {
-    address: 'localhost',
-    port: 27017,
-    dbName: 'jasami_test_db'
-  };
-// JSON-Schema validator
-const ajv = new Ajv();
+  address: 'localhost',
+  port: 27017,
+  dbName: 'jasami_test_db'
+};
 
 const createTestingDb = async () => {
   db.init(mongoConfig);
@@ -174,7 +174,7 @@ test('Basic End-points operation', async t => {
     ),
     '/restaurant response should match its json-schema'
   );
- 
+
   const readRestaurantNotFoundResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID`
   );
