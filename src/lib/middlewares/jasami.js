@@ -3,6 +3,7 @@ require('babel-polyfill');
 import db from '../database';
 import HTTPStatus from 'http-status';
 import Ajv from 'ajv';
+const ObjectID = require('mongodb').ObjectID;
 
 // JSON-Schema validator
 const ajv = new Ajv();
@@ -16,9 +17,17 @@ export const getAllRestaurants = async (req, res, next) => {
   res.status(HTTPStatus.OK).json(restaurants);
 };
 // GET /restaurant
-export const getRestaurtantById = (req, res, next) => {
+export const getRestaurtantById = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
-  res.status(HTTPStatus.OK).end('ok');
+  try {
+    const restaurant = await db.query
+      .collection('restaurants')
+      .findOne({ _id: new ObjectID(restaurantId) });
+    if (!restaurant) throw new Error('ObjectID not found');
+    res.status(HTTPStatus.OK).json(restaurant);
+  } catch (err) {
+    res.status(HTTPStatus.NOT_FOUND).json({});
+  }
 };
 // POST /restaurant
 export const addRestaurtant = async (req, res, next) => {
@@ -31,10 +40,27 @@ export const addRestaurtant = async (req, res, next) => {
       .json({ errors: ajv.errors.map(e => e.message) });
     return;
   }
-
+  const restaurantDefaults = {
+    location: {
+      alias: '',
+      address: '',
+      coordinates: {
+        lat: 0,
+        lng: 0
+      }
+    },
+    contact: {
+      phone: ''
+    },
+    priceRange: {
+      from: 0,
+      to: 0
+    },
+    menu: []
+  };
   const insertResult = await db.query
     .collection('restaurants')
-    .insertOne(req.body);
+    .insertOne(Object.assign({}, restaurantDefaults, req.body));
   res
     .status(HTTPStatus.CREATED)
     .json({ restaurantId: insertResult.insertedId });

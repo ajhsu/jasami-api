@@ -127,11 +127,11 @@ test('Basic End-points operation', async t => {
   await server.boot({ port: PORT });
 
   // Endpoint: /restaurants
-  const readRestaurantResponse = await GET(
+  const readRestaurantsResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurants`
   );
   t.equal(
-    readRestaurantResponse.statusCode,
+    readRestaurantsResponse.statusCode,
     HTTPStatus.OK,
     '/restaurants should return 200'
   );
@@ -140,32 +140,15 @@ test('Basic End-points operation', async t => {
   t.ok(
     ajv.validate(
       require('./schemas/restaurants/get/200.json'),
-      readRestaurantResponse.body
+      readRestaurantsResponse.body
     ),
     '/restaurants should match its json-schema'
   );
 
-  const fakeBody = {
-    name: `測試商店${new Date().getTime()}`,
-    location: {
-      alias: '光棚入口右側',
-      address: '台北市南港區三重路19-4號',
-      coordinates: {
-        lat: 25.0561558,
-        lng: 121.6120222
-      }
-    },
-    contact: {
-      phone: '02-2655-2221'
-    },
-    priceRange: {
-      from: 100,
-      to: 240
-    }
-  };
+  const newRestaurantName = `測試新建商店${new Date().getTime()}`;
   const createRestaurantResponse = await POST(
     `http://127.0.0.1:${PORT}/restaurant`,
-    { name: `測試商店${new Date().getTime()}` }
+    { name: newRestaurantName }
   );
   t.equal(
     createRestaurantResponse.statusCode,
@@ -180,9 +163,32 @@ test('Basic End-points operation', async t => {
     '/restaurant response should match its json-schema when created'
   );
 
+  const readRestaurantResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
+  );
+  t.equal(
+    readRestaurantResponse.statusCode,
+    HTTPStatus.OK,
+    '/restaurant/<restaurantId> should return 200 if resource exist'
+  );
+  t.equal(
+    readRestaurantResponse.body.name,
+    newRestaurantName,
+    '/restaurant/<restaurantId> should return response which matches the same name just given'
+  );
+
+  const readRestaurantNotFoundResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID`
+  );
+  t.equal(
+    readRestaurantNotFoundResponse.statusCode,
+    HTTPStatus.NOT_FOUND,
+    '/restaurants should return 404 if resource is not found'
+  );
+
   const createRestaurantFailResponse = await POST(
     `http://127.0.0.1:${PORT}/restaurant`,
-    { illegalBody: `測試商店${new Date().getTime()}` }
+    { illegalBody: `測試新建商店${new Date().getTime()}` }
   );
   t.equal(
     createRestaurantFailResponse.statusCode,
