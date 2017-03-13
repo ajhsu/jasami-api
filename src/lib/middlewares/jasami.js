@@ -58,9 +58,14 @@ export const addRestaurtant = async (req, res, next) => {
     },
     menu: []
   };
+  // Mering into single document
+  const newDocument = Object.assign({}, restaurantDefaults, req.body);
+  // Iterating the whole menu to give each dishes a unique objectId for querying
+  newDocument.menu = newDocument.menu.map(dish =>
+    Object.assign({}, dish, { _id: new ObjectID() }));
   const insertResult = await db.query
     .collection('restaurants')
-    .insertOne(Object.assign({}, restaurantDefaults, req.body));
+    .insertOne(newDocument);
   res
     .status(HTTPStatus.CREATED)
     .json({ restaurantId: insertResult.insertedId });
@@ -102,6 +107,19 @@ export const getAllDishesByRestaurantId = async (req, res, next) => {
 // GET /restaurant/<id>/dish/<id>
 export const getDishByRestaurantIdAndDishId = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
+  const dishId = req.params.dishId;
+  try {
+    const restaurant = await db.query
+      .collection('restaurants')
+      .findOne({ _id: new ObjectID(restaurantId) });
+    const dish = restaurant.menu
+      .filter(dish => dish._id.equals(new ObjectID(dishId)))
+      .shift();
+    if (!dish) throw new Error('ObjectID not found');
+    res.status(HTTPStatus.OK).json(dish);
+  } catch (err) {
+    res.status(HTTPStatus.NOT_FOUND).json({});
+  }
 };
 // POST /restaurant/<id>/dish
 export const addDishByRestaurantId = async (req, res, next) => {

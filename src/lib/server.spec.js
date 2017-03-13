@@ -385,6 +385,36 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
     '/restaurants/<id>/dishes should match its json-schema'
   );
 
+  const readDishesThatDoesntExistesResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID/dishes`
+  );
+  t.equal(
+    readDishesThatDoesntExistesResponse.statusCode,
+    HTTPStatus.NOT_FOUND,
+    '/restaurants/<id>/dishes should return 404'
+  );
+
+  // CRUD: Create
+  // const createDishResponse = await POST(
+  //   `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish`
+  // );
+
+  const firstDishId = readDishesResponse.body.shift()._id;
+
+  // CRUD: Read
+  const readDishResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`
+  );
+  t.equal(
+    readDishResponse.statusCode,
+    HTTPStatus.OK,
+    '/restaurants/<id>/dish/<id> should return 200'
+  );
+  t.ok(
+    ajv.validate(require('./schemas/dish/get/200.json'), readDishResponse.body),
+    '/restaurants/<id>/dish/<id> should match its json-schema'
+  );
+
   // teardown
   server.shutdown();
   await dropTestingDb();

@@ -6,7 +6,10 @@ import {
   getRestaurtantById,
   addRestaurtant,
   updateRestaurtantById,
-  getAllDishesByRestaurantId
+  getAllDishesByRestaurantId,
+  getDishByRestaurantIdAndDishId,
+  addDishByRestaurantId,
+  updateDishByRestaurantIdAndDishId
 } from './jasami';
 
 const router = Router();
@@ -20,5 +23,15 @@ router.route('/restaurant').post(addRestaurtant);
 router.route('/restaurant/:restaurantId').get(getRestaurtantById);
 router.route('/restaurant/:restaurantId').put(updateRestaurtantById);
 // /restaurants/<id>/dishes
-router.route('/restaurant/:restaurantId/dishes').get(getAllDishesByRestaurantId);
+router
+  .route('/restaurant/:restaurantId/dishes')
+  .get(getAllDishesByRestaurantId);
+// /restaurants/<id>/dish
+router.route('/restaurant/:restaurantId/dish').post(addDishByRestaurantId);
+router
+  .route('/restaurant/:restaurantId/dish/:dishId')
+  .get(getDishByRestaurantIdAndDishId);
+router
+  .route('/restaurant/:restaurantId/dish/:dishId')
+  .put(updateDishByRestaurantIdAndDishId);
 export default router;
