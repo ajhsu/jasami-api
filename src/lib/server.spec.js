@@ -10,15 +10,16 @@ import { GET, POST, PUT } from './utils/restful-test';
 
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
+const mongoConfig = {
+    address: 'localhost',
+    port: 27017,
+    dbName: 'jasami_test_db'
+  };
 // JSON-Schema validator
 const ajv = new Ajv();
 
 const createTestingDb = async () => {
-  db.init({
-    address: 'localhost',
-    port: 27017,
-    dbName: 'jasami_test_db'
-  });
+  db.init(mongoConfig);
   await db.connect();
   // Drop previous database
   await db.query.dropDatabase();
@@ -29,11 +30,7 @@ const createTestingDb = async () => {
 };
 
 const dropTestingDb = async () => {
-  db.init({
-    address: 'localhost',
-    port: 27017,
-    dbName: 'jasami_test_db'
-  });
+  db.init(mongoConfig);
   await db.connect();
   // Drop previous database
   await db.query.dropDatabase();
@@ -41,11 +38,7 @@ const dropTestingDb = async () => {
 };
 
 test('Connect to MongoDB', async t => {
-  db.init({
-    address: 'localhost',
-    port: 27017,
-    dbName: 'jasami_test_db'
-  });
+  db.init(mongoConfig);
   await db.connect();
 
   // Drop previous database
