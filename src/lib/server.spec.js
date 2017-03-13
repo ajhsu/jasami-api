@@ -401,6 +401,33 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
 
   const firstDishId = readDishesResponse.body.shift()._id;
 
+  // CRUD: Create
+  const createDishResponse = await POST(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish`,
+    {
+      name: '綜合測試粥',
+      price: 100,
+      tags: ['粥類', '測試']
+    }
+  );
+  t.equal(
+    createDishResponse.statusCode,
+    HTTPStatus.CREATED,
+    '/restaurants/<id>/dish should return 201 when dish was created'
+  );
+  const readFromDishJustCreatedResponse = await GET(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`
+  );
+  t.equal(
+    readFromDishJustCreatedResponse.statusCode,
+    HTTPStatus.OK,
+    '/restaurants/<id>/dish/<id> should return 200'
+  );
+  t.ok(
+    ajv.validate(require('./schemas/dish/get/200.json'), readFromDishJustCreatedResponse.body),
+    '/restaurants/<id>/dish/<id> should match its json-schema'
+  );
+
   // CRUD: Read
   const readDishResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`

@@ -73,7 +73,8 @@
             "type": "string"
           },
           "price": {
-            "type": "number"
+            "type": "number",
+            "minimum": 0
           },
           "tags": {
             "type": "array",

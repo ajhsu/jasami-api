@@ -124,6 +124,30 @@ export const getDishByRestaurantIdAndDishId = async (req, res, next) => {
 // POST /restaurant/<id>/dish
 export const addDishByRestaurantId = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
+  // json-schema validate
+  if (!ajv.validate(require('../schemas/dish/post/request.json'), req.body)) {
+    res
+      .status(HTTPStatus.BAD_REQUEST)
+      .json({ errors: ajv.errors.map(e => e.message) });
+    return;
+  }
+  const newDishId = new ObjectID();
+  const dishDefaults = {
+    name: '',
+    price: 0,
+    tags: []
+  };
+  // Mering into single document
+  const newDocument = Object.assign({}, dishDefaults, req.body, {
+    _id: newDishId
+  });
+  const upsertResult = await db.query
+    .collection('restaurants')
+    .update(
+      { _id: new ObjectID(restaurantId) },
+      { $push: { menu: newDocument } }
+    );
+  res.status(HTTPStatus.CREATED).json({ dishId: newDishId });
 };
 // PUT /restaurant/<id>/dish/<id>
 export const updateDishByRestaurantIdAndDishId = async (req, res, next) => {
