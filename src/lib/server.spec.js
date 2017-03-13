@@ -137,7 +137,7 @@ test('Basic End-points operation', async t => {
 
   await server.boot({ port: PORT });
 
-  // Endpoint: /restaurants
+  // CRUD: Read
   const readRestaurantsResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurants`
   );
@@ -147,7 +147,6 @@ test('Basic End-points operation', async t => {
     '/restaurants should return 200'
   );
 
-  // json-schema validate
   t.ok(
     ajv.validate(
       require('./schemas/restaurants/get/200.json'),
@@ -156,6 +155,7 @@ test('Basic End-points operation', async t => {
     '/restaurants should match its json-schema'
   );
 
+  // CRUD: Create
   const newRestaurantName = `測試新建商店${new Date().getTime()}`;
   const createRestaurantResponse = await POST(
     `http://127.0.0.1:${PORT}/restaurant`,
@@ -191,6 +191,7 @@ test('Basic End-points operation', async t => {
     '/restaurant response should match its json-schema when creating fail'
   );
 
+  // CRUD: Read
   const readRestaurantResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
   );
@@ -211,7 +212,7 @@ test('Basic End-points operation', async t => {
     ),
     '/restaurant response should match its json-schema'
   );
-
+ 
   const readRestaurantNotFoundResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID`
   );
@@ -221,6 +222,7 @@ test('Basic End-points operation', async t => {
     '/restaurants should return 404 if resource is not found'
   );
 
+  // CRUD: Update
   const updatedRestaurantName = `測試更新商店${new Date().getTime()}`;
   const updateRestaurantResponse = await PUT(
     `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
@@ -247,6 +249,28 @@ test('Basic End-points operation', async t => {
     ),
     '/restaurant response just updated should match json-schema'
   );
+
+  const updateWithWrongTypeResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
+    { name: 5566 }
+  );
+  t.equal(
+    updateWithWrongTypeResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurant should return 400 if given value type were wrong'
+  );
+  console.log(updateWithWrongTypeResponse.body);
+
+  const updateWithGivenFieldsWereNotAcceptedResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
+    { fieldDoesntExisted: 'fakedata' }
+  );
+  t.equal(
+    updateWithGivenFieldsWereNotAcceptedResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurant should return 400 if given fields were not accepted'
+  );
+  console.log(updateWithGivenFieldsWereNotAcceptedResponse.body);
 
   // teardown
   server.shutdown();

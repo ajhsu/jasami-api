@@ -53,10 +53,10 @@
         "type": "object",
         "properties": {
           "from": {
-            "type": "integer"
+            "type": "number"
           },
           "to": {
-            "type": "integer"
+            "type": "number"
           }
         },
         "required": [
@@ -73,7 +73,7 @@
               "type": "string"
             },
             "price": {
-              "type": "integer"
+              "type": "number"
             },
             "tags": {
               "type": "array",
