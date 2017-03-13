@@ -66,7 +66,25 @@ export const addRestaurtant = async (req, res, next) => {
     .json({ restaurantId: insertResult.insertedId });
 };
 // PUT /restaurant
-export const updateRestaurtantById = (restaurantId, payload) => {};
+export const updateRestaurtantById = async (req, res, next) => {
+  const restaurantId = req.params.restaurantId;
+  // json-schema validate
+  if (
+    !ajv.validate(require('../schemas/restaurant/put/request.json'), req.body)
+  ) {
+    res
+      .status(HTTPStatus.BAD_REQUEST)
+      .json({ errors: ajv.errors.map(e => e.message) });
+    return;
+  }
+  const updateResult = await db.query.collection('restaurants').update(
+    {
+      _id: new ObjectID(restaurantId)
+    },
+    { $set: req.body }
+  );
+  res.status(HTTPStatus.OK).json({ restaurantId });
+};
 
 // GET /restaurant/<id>/dishes
 export const getAllDishesByRestaurantId = restaurantId => {};

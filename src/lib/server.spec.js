@@ -32,6 +32,17 @@ const POST = (url, body = {}) => {
     json: true
   });
 };
+const PUT = (url, body = {}) => {
+  return requestPromise({
+    method: 'PUT',
+    uri: url,
+    body: body,
+    resolveWithFullResponse: true,
+    // Disable auto rejection if is not 2xx
+    simple: false,
+    json: true
+  });
+};
 
 const createTestingDb = async () => {
   db.init({
@@ -192,6 +203,12 @@ test('Basic End-points operation', async t => {
     HTTPStatus.NOT_FOUND,
     '/restaurants should return 404 if resource is not found'
   );
+
+  const updateRestaurantResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
+    { name: `測試更新商店${new Date().getTime()}` }
+  );
+  t.equal(updateRestaurantResponse.statusCode, HTTPStatus.OK, '/restaurant should return 200 if resource was updated');
 
   const createRestaurantFailResponse = await POST(
     `http://127.0.0.1:${PORT}/restaurant`,
