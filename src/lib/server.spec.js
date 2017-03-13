@@ -174,6 +174,23 @@ test('Basic End-points operation', async t => {
     '/restaurant response should match its json-schema when created'
   );
 
+  const createRestaurantFailResponse = await POST(
+    `http://127.0.0.1:${PORT}/restaurant`,
+    { illegalBody: `測試新建商店${new Date().getTime()}` }
+  );
+  t.equal(
+    createRestaurantFailResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurants should return 400 if body is invalid'
+  );
+  t.ok(
+    ajv.validate(
+      require('./schemas/restaurant/post/400.json'),
+      createRestaurantFailResponse.body
+    ),
+    '/restaurant response should match its json-schema when creating fail'
+  );
+
   const readRestaurantResponse = await GET(
     `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
   );
@@ -223,22 +240,12 @@ test('Basic End-points operation', async t => {
     updatedRestaurantName,
     '/restaurant/<restaurantId> should return response which matches the same name just updated'
   );
-
-  const createRestaurantFailResponse = await POST(
-    `http://127.0.0.1:${PORT}/restaurant`,
-    { illegalBody: `測試新建商店${new Date().getTime()}` }
-  );
-  t.equal(
-    createRestaurantFailResponse.statusCode,
-    HTTPStatus.BAD_REQUEST,
-    '/restaurants should return 400 if body is invalid'
-  );
   t.ok(
     ajv.validate(
-      require('./schemas/restaurant/post/400.json'),
-      createRestaurantFailResponse.body
+      require('./schemas/restaurant/get/200.json'),
+      readUpdatedRestaurantResponse.body
     ),
-    '/restaurant response should match its json-schema when creating fail'
+    '/restaurant response just updated should match json-schema'
   );
 
   // teardown
