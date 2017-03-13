@@ -3,6 +3,7 @@ import cors from 'cors';
 import requestPromise from 'request-promise';
 import morgan from 'morgan';
 import routes from './middlewares/routes';
+import database from './database';
 
 class Server {
   constructor() {
@@ -17,11 +18,28 @@ class Server {
     this.express.use(routes);
   }
   boot({ port = 3000 }) {
-    this.expressRunningInstance = this.express.listen(port, () => {
-      console.log(`Node-server start to listen on port ${port}..`);
+    return new Promise((y, n) => {
+      database.init({
+        address: 'localhost',
+        port: 27017,
+        dbName: 'jasami_test_db'
+      });
+      database
+        .connect()
+        .then(() => {
+          this.expressRunningInstance = this.express.listen(port, () => {
+            console.log(`Node-server start to listen on port ${port}..`);
+            y('ok');
+          });
+        })
+        .catch(err => {
+          throw new Error(err);
+        });
     });
   }
   shutdown() {
+    console.log('Database connection is going to close..');
+    database.close();
     console.log('Node-server is going to shutdown..');
     this.expressRunningInstance.close();
   }

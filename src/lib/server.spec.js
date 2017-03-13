@@ -4,13 +4,13 @@ import test from 'tape';
 import Ajv from 'ajv';
 import Server from './server';
 import requestPromise from 'request-promise';
+import HTTPStatus from 'http-status';
+import db from './database';
 
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
-
 // JSON-Schema validator
 const ajv = new Ajv();
-
 // Wrapped method that makeing a GET request and return in Promise
 const GET = url => {
   return requestPromise({
@@ -21,21 +21,19 @@ const GET = url => {
 };
 
 test('Connect to MongoDB', async t => {
-  const config = {
-    dbAddress: 'localhost',
-    dbPort: 27017,
+  db.init({
+    address: 'localhost',
+    port: 27017,
     dbName: 'jasami_test_db'
-  };
-  const db = await mongo.connect(
-    `mongodb://${config.dbAddress}:${config.dbPort}/${config.dbName}`
-  );
+  });
+  await db.connect();
 
   // Drop previous database
-  await db.dropDatabase();
+  await db.query.dropDatabase();
   // Create collection
-  await db.createCollection('restaurants');
-  await db.collection('restaurants').insert(require('./mock-db.js'));
-  const result = await db
+  await db.query.createCollection('restaurants');
+  await db.query.collection('restaurants').insert(require('./mock-db.js'));
+  const result = await db.query
     .collection('restaurants')
     .find({}, { _id: 0, name: 1 })
     .toArray();
@@ -43,7 +41,7 @@ test('Connect to MongoDB', async t => {
   t.equal(3, result.length, 'count of documents should match expected');
 
   // Drop testing database
-  await db.dropDatabase();
+  await db.query.dropDatabase();
   db.close();
   t.end();
 });
@@ -52,8 +50,7 @@ test('Basic server operation', async t => {
   // arrange
   const PORT = 3001;
   const server = new Server();
-  server.boot({ port: PORT });
-
+  await server.boot({ port: PORT });
   // act
   const healthResponse = await GET(`http://127.0.0.1:${PORT}/health`);
   t.equal(healthResponse.statusCode, 200, '/health should return 200');
@@ -81,14 +78,33 @@ test('Basic server operation', async t => {
 });
 
 test('Basic End-points operation', async t => {
+  db.init({
+    address: 'localhost',
+    port: 27017,
+    dbName: 'jasami_test_db'
+  });
+  await db.connect();
+
+  // Drop previous database
+  await db.query.dropDatabase();
+  // Create collection
+  await db.query.createCollection('restaurants');
+  await db.query.collection('restaurants').insert(require('./mock-db.js'));
+  db.close();
+
   // arrange
   const PORT = 3001;
   const server = new Server();
-  server.boot({ port: PORT });
+
+  await server.boot({ port: PORT });
 
   // Endpoint: /restaurants
   const restaurantResponse = await GET(`http://127.0.0.1:${PORT}/restaurants`);
-  t.equal(restaurantResponse.statusCode, 200, '/restaurants should return 200');
+  t.equal(
+    restaurantResponse.statusCode,
+    HTTPStatus.OK,
+    '/restaurants should return 200'
+  );
 
   // json-schema validate
   const valid = ajv.validate(

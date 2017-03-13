@@ -23,6 +23,7 @@
   "dependencies": {
     "cors": "^2.7.1",
     "express": "^4.13.3",
+    "http-status": "^1.0.1",
     "mongodb": "^2.2.24",
     "morgan": "^1.8.1",
     "request": "^2.80.0",
