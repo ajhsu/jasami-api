@@ -37,7 +37,7 @@ const dropTestingDb = async () => {
   db.close();
 };
 
-test('Connect to MongoDB', async t => {
+test('MongoDB basic connection', async t => {
   db.init(mongoConfig);
   await db.connect();
 
@@ -59,7 +59,7 @@ test('Connect to MongoDB', async t => {
   t.end();
 });
 
-test('Basic server operation', async t => {
+test('Basic server operations', async t => {
   // arrange
   const PORT = 3001;
   const server = new Server();
@@ -90,7 +90,7 @@ test('Basic server operation', async t => {
   t.end();
 });
 
-test('Basic End-points operation', async t => {
+test('End-points /restaurant basic operations', async t => {
   await createTestingDb();
 
   // arrange
