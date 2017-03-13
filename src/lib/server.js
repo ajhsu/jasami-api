@@ -15,7 +15,7 @@ class Server {
   init() {
     this.express = express();
     // to support JSON-encoded bodies
-    this.express.use(bodyParser.json()); 
+    this.express.use(bodyParser.json());
     // to support URL-encoded bodies
     this.express.use(
       bodyParser.urlencoded({
@@ -48,10 +48,14 @@ class Server {
     });
   }
   shutdown() {
-    console.log('Database connection is going to close..');
-    database.close();
-    console.log('Node-server is going to shutdown..');
-    this.expressRunningInstance.close();
+    if (database) {
+      console.log('Database connection is going to close..');
+      database.close();
+    }
+    if (this.expressRunningInstance) {
+      console.log('Node-server is going to shutdown..');
+      this.expressRunningInstance.close();
+    }
   }
 }
 
