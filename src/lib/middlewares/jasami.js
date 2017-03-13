@@ -87,17 +87,30 @@ export const updateRestaurtantById = async (req, res, next) => {
 };
 
 // GET /restaurant/<id>/dishes
-export const getAllDishesByRestaurantId = restaurantId => {};
+export const getAllDishesByRestaurantId = async (req, res, next) => {
+  const restaurantId = req.params.restaurantId;
+  try {
+    const restaurant = await db.query
+      .collection('restaurants')
+      .findOne({ _id: new ObjectID(restaurantId) });
+    if (!restaurant) throw new Error('ObjectID not found');
+    res.status(HTTPStatus.OK).json(restaurant.menu);
+  } catch (err) {
+    res.status(HTTPStatus.NOT_FOUND).json({});
+  }
+};
 // GET /restaurant/<id>/dish/<id>
-export const getDishByRestaurantIdAndDishId = (restaurantId, dishId) => {};
+export const getDishByRestaurantIdAndDishId = async (req, res, next) => {
+  const restaurantId = req.params.restaurantId;
+};
 // POST /restaurant/<id>/dish
-export const addDishByRestaurantId = (restaurantId, payload) => {};
+export const addDishByRestaurantId = async (req, res, next) => {
+  const restaurantId = req.params.restaurantId;
+};
 // PUT /restaurant/<id>/dish/<id>
-export const updateDishByRestaurantIdAndDishId = (
-  restaurantId,
-  dishId,
-  payload
-) => {};
+export const updateDishByRestaurantIdAndDishId = async (req, res, next) => {
+  const restaurantId = req.params.restaurantId;
+};
 
 // GET /search?keyword=<text>
 export const search = keyword => {};
