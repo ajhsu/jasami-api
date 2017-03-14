@@ -7,6 +7,10 @@ class Database {
   constructor() {
     this.dbConnection = null;
     this.mongodbUri = null;
+    this._connected = false;
+  }
+  get connected() {
+    return this._connected;
   }
   init(
     {
@@ -23,14 +27,15 @@ class Database {
       ssl: false
     };
     return new Promise((y, n) => {
-      if (!this.mongodbUri)
-        throw new Error(`The database hasn't been setup yet.`);
+      if (!this.mongodbUri) n(`The database hasn't been setup yet.`);
       mongo.connect(this.mongodbUri, opt, (err, db) => {
         if (err) {
-          throw new Error(err);
+          n(err);
         } else {
           this.dbConnection = db;
+          this._connected = true;
           y(this.dbConnection);
+          console.log('MongoDB connected');
         }
       });
     });
@@ -41,7 +46,11 @@ class Database {
     return this.dbConnection;
   }
   close() {
-    this.dbConnection.close();
+    if (this.dbConnection && this._connected) {
+      console.log('DBManager is going to close db connection..');
+      return this.dbConnection.close();
+    }
+    return Promise.resolve('No connection');
   }
 }
 const instance = new Database();

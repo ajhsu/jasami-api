@@ -10,7 +10,13 @@ import HTTPStatus from 'http-status';
 import db from './db-manager';
 import { mongodbConfig } from '../config';
 import { GET, POST, PUT } from './utils/restful-test';
-import { createTestingDb, dropTestingDb } from './utils/database-migration';
+import {
+  createTestingDb,
+  dropTestingDb,
+  createCounterCollection,
+  dropCounterCollection,
+  getNextCount
+} from './utils/database-migration';
 
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
@@ -64,17 +70,16 @@ test('Basic server operations', async t => {
   );
 
   // teardown
-  server.shutdown();
+  await server.shutdown();
   t.end();
 });
 
 test('End-points /restaurant basic operations', async t => {
-  await createTestingDb();
-
   // arrange
   const PORT = 3001;
   const server = new Server();
   await server.boot({ port: PORT });
+  await createTestingDb();
 
   // CRUD: Read
   const readRestaurantsResponse = await GET(
@@ -198,7 +203,6 @@ test('End-points /restaurant basic operations', async t => {
     HTTPStatus.BAD_REQUEST,
     '/restaurant should return 400 if given value type were wrong'
   );
-  console.log(updateWithWrongTypeResponse.body);
 
   const updateWithGivenFieldsWereNotAcceptedResponse = await PUT(
     `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
@@ -209,21 +213,19 @@ test('End-points /restaurant basic operations', async t => {
     HTTPStatus.BAD_REQUEST,
     '/restaurant should return 400 if given fields were not accepted'
   );
-  console.log(updateWithGivenFieldsWereNotAcceptedResponse.body);
 
   // teardown
-  server.shutdown();
   await dropTestingDb();
+  await server.shutdown();
   t.end();
 });
 
 test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
-  await createTestingDb();
-
   // arrange
   const PORT = 3001;
   const server = new Server();
   await server.boot({ port: PORT });
+  await createTestingDb();
 
   const createRestaurantResponse = await POST(
     `http://127.0.0.1:${PORT}/restaurant`,
@@ -402,7 +404,10 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
     '/restaurants/<id>/dish/<id> should return 200'
   );
   t.ok(
-    ajv.validate(require('./schemas/dish/get/200.json'), readFromDishJustCreatedResponse.body),
+    ajv.validate(
+      require('./schemas/dish/get/200.json'),
+      readFromDishJustCreatedResponse.body
+    ),
     '/restaurants/<id>/dish/<id> should match its json-schema'
   );
 
@@ -420,8 +425,36 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
     '/restaurants/<id>/dish/<id> should match its json-schema'
   );
 
+  // CRUD: Update
+  const updateDishResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`
+  );
+  console.log(updateDishResponse.body);
+
   // teardown
-  server.shutdown();
   await dropTestingDb();
+  await server.shutdown();
   t.end();
 });
+
+const sleep = seconds => {
+  return new Promise((y, n) => {
+    setTimeout(() => y('ok'), seconds * 1000);
+  });
+};
+
+// test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
+//   // arrange
+//   const PORT = 3001;
+//   const server = new Server();
+//   await server.boot({ port: PORT });
+
+//   await createTestingDb();
+//   await createCounterCollection(['restuarant', 'dish']);
+//   await dropCounterCollection();
+//   await dropTestingDb();
+
+//   // teardown
+//   await server.shutdown();
+//   t.end();
+// });

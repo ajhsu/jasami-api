@@ -11,6 +11,7 @@ class Server {
     this.express = null;
     this.expressRunningInstance = null;
     this.init();
+    console.log('Server created');
   }
   init() {
     this.express = express();
@@ -26,35 +27,35 @@ class Server {
     this.express.use(morgan('dev'));
     this.express.use(routes);
   }
-  boot({ port = 3000 }) {
+  _startExpressServer(port) {
     return new Promise((y, n) => {
-      const mongodbConfig = {
-        address: 'localhost',
-        port: 27017,
-        dbName: 'jasami_test_db'
-      };
-      database.init(mongodbConfig);
-      database
-        .connect()
-        .then(() => {
-          this.expressRunningInstance = this.express.listen(port, () => {
-            console.log(`Node-server start to listen on port ${port}..`);
-            y('ok');
-          });
-        })
-        .catch(err => {
-          throw new Error(err);
-        });
+      this.expressRunningInstance = this.express.listen(port, () => {
+        console.log(`Node-server start to listen on port ${port}..`);
+        y(port);
+      });
     });
   }
-  shutdown() {
-    if (database) {
+  boot({ port = 3000 }) {
+    const mongodbConfig = {
+      address: 'localhost',
+      port: 27017,
+      dbName: 'jasami_test_db'
+    };
+    database.init(mongodbConfig);
+    return database
+      .connect()
+      .then(db => this._startExpressServer(port));
+  }
+  async shutdown() {
+    try {
       console.log('Database connection is going to close..');
-      database.close();
-    }
-    if (this.expressRunningInstance) {
-      console.log('Node-server is going to shutdown..');
-      this.expressRunningInstance.close();
+      await database.close();
+      if (this.expressRunningInstance) {
+        console.log('Node-server is going to shutdown..');
+        this.expressRunningInstance.close();
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 }
