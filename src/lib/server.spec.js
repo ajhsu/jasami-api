@@ -8,30 +8,12 @@ import Server from './server';
 import requestPromise from 'request-promise';
 import HTTPStatus from 'http-status';
 import db from './db-manager';
-import { GET, POST, PUT } from './utils/restful-test';
 import { mongodbConfig } from '../config';
+import { GET, POST, PUT } from './utils/restful-test';
+import { createTestingDb, dropTestingDb } from './utils/database-migration';
 
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
-
-const createTestingDb = async () => {
-  db.init(mongodbConfig);
-  await db.connect();
-  // Drop previous database
-  await db.query.dropDatabase();
-  // Create collection
-  await db.query.createCollection('restaurants');
-  await db.query.collection('restaurants').insert(require('./mock-db.js'));
-  db.close();
-};
-
-const dropTestingDb = async () => {
-  db.init(mongodbConfig);
-  await db.connect();
-  // Drop previous database
-  await db.query.dropDatabase();
-  db.close();
-};
 
 test('MongoDB basic connection', async t => {
   db.init(mongodbConfig);
