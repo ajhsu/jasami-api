@@ -1,6 +1,6 @@
 require('babel-polyfill');
 
-import db from '../database';
+import db from '../db-manager';
 import HTTPStatus from 'http-status';
 import Ajv from 'ajv';
 const ObjectID = require('mongodb').ObjectID;

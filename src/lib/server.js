@@ -3,7 +3,7 @@ import cors from 'cors';
 import requestPromise from 'request-promise';
 import morgan from 'morgan';
 import routes from './middlewares/routes';
-import database from './database';
+import database from './db-manager';
 import bodyParser from 'body-parser';
 
 class Server {

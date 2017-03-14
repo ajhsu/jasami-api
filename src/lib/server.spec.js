@@ -7,7 +7,7 @@ const ajv = new Ajv();
 import Server from './server';
 import requestPromise from 'request-promise';
 import HTTPStatus from 'http-status';
-import db from './database';
+import db from './db-manager';
 import { GET, POST, PUT } from './utils/restful-test';
 
 // MongoDB Driver
