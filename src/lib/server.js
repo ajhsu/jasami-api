@@ -3,7 +3,7 @@ import cors from 'cors';
 import requestPromise from 'request-promise';
 import morgan from 'morgan';
 import routes from './middlewares/routes';
-import database from './db-manager';
+import dbManager from './db-manager';
 import bodyParser from 'body-parser';
 
 class Server {
@@ -41,15 +41,14 @@ class Server {
       port: 27017,
       dbName: 'jasami_test_db'
     };
-    database.init(mongodbConfig);
-    return database
+    dbManager.init(mongodbConfig);
+    return dbManager
       .connect()
       .then(db => this._startExpressServer(port));
   }
   async shutdown() {
     try {
-      console.log('Database connection is going to close..');
-      await database.close();
+      await dbManager.close();
       if (this.expressRunningInstance) {
         console.log('Node-server is going to shutdown..');
         this.expressRunningInstance.close();

@@ -47,7 +47,7 @@ class Database {
   }
   close() {
     if (this.dbConnection && this._connected) {
-      console.log('DBManager is going to close db connection..');
+      console.log('MongoDB is going to close..');
       return this.dbConnection.close();
     }
     return Promise.resolve('No connection');
