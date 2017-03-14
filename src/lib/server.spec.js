@@ -9,17 +9,13 @@ import requestPromise from 'request-promise';
 import HTTPStatus from 'http-status';
 import db from './db-manager';
 import { GET, POST, PUT } from './utils/restful-test';
+import { mongodbConfig } from '../config';
 
 // MongoDB Driver
 const mongo = require('mongodb').MongoClient;
-const mongoConfig = {
-  address: 'localhost',
-  port: 27017,
-  dbName: 'jasami_test_db'
-};
 
 const createTestingDb = async () => {
-  db.init(mongoConfig);
+  db.init(mongodbConfig);
   await db.connect();
   // Drop previous database
   await db.query.dropDatabase();
@@ -30,7 +26,7 @@ const createTestingDb = async () => {
 };
 
 const dropTestingDb = async () => {
-  db.init(mongoConfig);
+  db.init(mongodbConfig);
   await db.connect();
   // Drop previous database
   await db.query.dropDatabase();
@@ -38,7 +34,7 @@ const dropTestingDb = async () => {
 };
 
 test('MongoDB basic connection', async t => {
-  db.init(mongoConfig);
+  db.init(mongodbConfig);
   await db.connect();
 
   // Drop previous database

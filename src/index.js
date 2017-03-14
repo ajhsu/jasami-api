@@ -1,4 +1,4 @@
 import Server from './lib/server';
-import config from './config';
+import { expressConfig } from './config';
 const s = new Server();
-s.boot({ port: config.port });
+s.boot({ port: expressConfig.port });

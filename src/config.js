@@ -1,6 +1,9 @@
 // Server configurations
-const config = {
+export const expressConfig = {
   port: 3002
 };
-
-export default config;
+export const mongodbConfig = {
+  address: 'localhost',
+  port: 27017,
+  dbName: 'jasami_test_db'
+};
