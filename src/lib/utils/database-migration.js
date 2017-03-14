@@ -9,7 +9,7 @@ export const createTestingDb = async () => {
   // Create collection
   await db.query.createCollection('restaurants');
   await db.query.collection('restaurants').insert(require('../mock-db.js'));
-  db.close();
+  await db.close();
 };
 
 export const dropTestingDb = async () => {
@@ -17,5 +17,5 @@ export const dropTestingDb = async () => {
   await db.connect();
   // Drop previous database
   await db.query.dropDatabase();
-  db.close();
+  await db.close();
 };

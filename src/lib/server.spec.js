@@ -33,7 +33,7 @@ test('MongoDB basic connection', async t => {
 
   // Drop testing database
   await db.query.dropDatabase();
-  db.close();
+  await db.close();
   t.end();
 });
 
