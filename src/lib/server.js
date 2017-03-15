@@ -26,6 +26,11 @@ class Server {
     this.express.use(cors());
     this.express.use(morgan('dev'));
     this.express.use(routes);
+    // error handling
+    this.express.use((err, req, res, next) => {
+      console.error(err.stack);
+      res.status(500).send({ errors: 'Something just exploded.' });
+    });
   }
   _startExpressServer(port) {
     return new Promise((y, n) => {
