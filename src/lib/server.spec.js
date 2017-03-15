@@ -426,35 +426,38 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
   );
 
   // CRUD: Update
-  const updateDishResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`
+  const updateDishWithCorrectPropertiesResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`,
+    { name: '綜合測試更新粥', price: 99 }
   );
-  console.log(updateDishResponse.body);
+  t.equal(
+    updateDishWithCorrectPropertiesResponse.statusCode,
+    HTTPStatus.OK,
+    '/restaurants/<id>/dish/<id> should return 200 when updated success'
+  );
+
+  const updateDishWithWrongTypedPropertyResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`,
+    { name: '綜合測試錯誤粥', price: '給一個錯誤的型別' }
+  );
+  t.equal(
+    updateDishWithWrongTypedPropertyResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurants/<id>/dish/<id> should return 400 when updated with wrong-typed property'
+  );
+
+  const updateDishWithUnrelatedPropertyResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`,
+    { unrelatedProperty: '給定一個無關的屬性' }
+  );
+  t.equal(
+    updateDishWithUnrelatedPropertyResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurants/<id>/dish/<id> should return 400 when updated with unrelated property'
+  );
 
   // teardown
   await dropTestingDb();
   await server.shutdown();
   t.end();
 });
-
-const sleep = seconds => {
-  return new Promise((y, n) => {
-    setTimeout(() => y('ok'), seconds * 1000);
-  });
-};
-
-// test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
-//   // arrange
-//   const PORT = 3001;
-//   const server = new Server();
-//   await server.boot({ port: PORT });
-
-//   await createTestingDb();
-//   await createCounterCollection(['restuarant', 'dish']);
-//   await dropCounterCollection();
-//   await dropTestingDb();
-
-//   // teardown
-//   await server.shutdown();
-//   t.end();
-// });
