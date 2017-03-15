@@ -1,6 +1,7 @@
 // Server configurations
 export const expressConfig = {
-  port: 3002
+  port: 3002,
+  domainName: 'api.jasami.today'
 };
 export const mongodbConfig = {
   address: 'localhost',

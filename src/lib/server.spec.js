@@ -49,6 +49,11 @@ test('Basic server operations', async t => {
   const server = new Server();
   await server.boot({ port: PORT });
   // act
+  const routeTableResponse = await GET(`http://127.0.0.1:${PORT}/`);
+  t.equal(routeTableResponse.statusCode, 200, '/ should return 200');
+  console.log(routeTableResponse.body);
+
+  // act
   const healthResponse = await GET(`http://127.0.0.1:${PORT}/health`);
   t.equal(healthResponse.statusCode, 200, '/health should return 200');
   t.deepEqual(

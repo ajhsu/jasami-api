@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import routeTable from './route-table';
 import healthCheck from './health-check';
 import favicon from './favicon';
 import {
@@ -14,6 +15,7 @@ import {
 
 const router = Router();
 
+router.route('/').get(routeTable);
 router.route('/health').get(healthCheck);
 router.route('/favicon.ico').get(favicon);
 // /restaurants
