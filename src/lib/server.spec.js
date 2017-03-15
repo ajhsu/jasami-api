@@ -219,6 +219,15 @@ test('End-points /restaurant basic operations', async t => {
     '/restaurant should return 400 if given fields were not accepted'
   );
 
+  const updateWithEmptyBodyResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
+  );
+  t.equal(
+    updateWithEmptyBodyResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurant should return 400 if request body is empty'
+  );
+
   // teardown
   await dropTestingDb();
   await server.shutdown();
@@ -379,6 +388,15 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
     updateDishWithUnrelatedPropertyResponse.statusCode,
     HTTPStatus.BAD_REQUEST,
     '/restaurants/<id>/dish/<id> should return 400 when updated with unrelated property'
+  );
+
+  const updateWithEmptyBodyResponse = await PUT(
+    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`,
+  );
+  t.equal(
+    updateWithEmptyBodyResponse.statusCode,
+    HTTPStatus.BAD_REQUEST,
+    '/restaurants/<id>/dish/<id> should return 400 if request body is empty'
   );
 
   // teardown

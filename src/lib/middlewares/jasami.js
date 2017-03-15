@@ -73,6 +73,13 @@ export const addRestaurtant = async (req, res, next) => {
 // PUT /restaurant
 export const updateRestaurtantById = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
+  // check if body is empty
+  if (!req.body || JSON.stringify(req.body) === '{}') {
+    res
+      .status(HTTPStatus.BAD_REQUEST)
+      .json({ errors: 'Body should not be empty' });
+    return;
+  }
   // json-schema validate
   if (
     !ajv.validate(require('../schemas/restaurant/put/request.json'), req.body)
@@ -161,6 +168,12 @@ export const updateDishByRestaurantIdAndDishId = async (req, res, next) => {
       .filter(dish => dish._id.equals(new ObjectID(dishId)))
       .shift();
     if (!dish) throw new Error('ObjectID not found');
+    if (!req.body || JSON.stringify(req.body) === '{}') {
+      res
+        .status(HTTPStatus.BAD_REQUEST)
+        .json({ errors: 'Body should not be empty' });
+      return;
+    }
     // json-schema validate
     if (!ajv.validate(require('../schemas/dish/put/request.json'), req.body)) {
       res
