@@ -89,11 +89,18 @@ export const updateRestaurtantById = async (req, res, next) => {
       .json({ errors: ajv.errors.map(e => e.message) });
     return;
   }
+  const nextDocument = req.body;
+  // Attaching id(s) if is not existed
+  if (nextDocument.menu) {
+    nextDocument.menu = nextDocument.menu.map(
+      dish => dish._id ? dish : Object.assign({}, dish, { _id: new ObjectID() })
+    );
+  }
   const updateResult = await db.query.collection('restaurants').update(
     {
       _id: new ObjectID(restaurantId)
     },
-    { $set: req.body }
+    { $set: nextDocument }
   );
   res.status(HTTPStatus.OK).json({ restaurantId });
 };
