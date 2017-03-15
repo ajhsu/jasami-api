@@ -14,6 +14,7 @@
     "postbuild": "npm run clone-json-schema",
     "prestart": "npm run build",
     "start": "node ./dist/index.js",
+    "prestart:prod": "npm run build",
     "start:prod": "./node_modules/.bin/pm2 start ecosystem.config.js",
     "stop:prod": "./node_modules/.bin/pm2 delete ecosystem.config.js",
     "log": "./node_modules/.bin/pm2 logs 'jasami-api'",

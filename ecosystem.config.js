@@ -7,7 +7,7 @@ module.exports = {
     // First application
     {
       name: 'jasami-api',
-      script: 'index.js',
+      script: './dist/index.js',
       watch: ['dist'],
       ignore_watch: ['node_modules']
     }
