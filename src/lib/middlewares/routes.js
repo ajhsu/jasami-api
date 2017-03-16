@@ -21,19 +21,19 @@ router.route('/favicon.ico').get(favicon);
 // /restaurants
 router.route('/restaurants').get(getAllRestaurants);
 // /restaurant
-router.route('/restaurant').post(addRestaurtant);
-router.route('/restaurant/:restaurantId').get(getRestaurtantById);
-router.route('/restaurant/:restaurantId').put(updateRestaurtantById);
+router.route('/restaurants').post(addRestaurtant);
+router.route('/restaurants/:restaurantId').get(getRestaurtantById);
+router.route('/restaurants/:restaurantId').put(updateRestaurtantById);
 // /restaurants/<id>/dishes
 router
-  .route('/restaurant/:restaurantId/dishes')
+  .route('/restaurants/:restaurantId/dishes')
   .get(getAllDishesByRestaurantId);
 // /restaurants/<id>/dish
-router.route('/restaurant/:restaurantId/dish').post(addDishByRestaurantId);
+router.route('/restaurants/:restaurantId/dishes').post(addDishByRestaurantId);
 router
-  .route('/restaurant/:restaurantId/dish/:dishId')
+  .route('/restaurants/:restaurantId/dishes/:dishId')
   .get(getDishByRestaurantIdAndDishId);
 router
-  .route('/restaurant/:restaurantId/dish/:dishId')
+  .route('/restaurants/:restaurantId/dishes/:dishId')
   .put(updateDishByRestaurantIdAndDishId);
 export default router;

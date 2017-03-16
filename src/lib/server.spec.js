@@ -107,7 +107,7 @@ test('End-points /restaurant basic operations', async t => {
   // CRUD: Create
   const newRestaurantName = `測試新建商店${new Date().getTime()}`;
   const createRestaurantResponse = await POST(
-    `http://127.0.0.1:${PORT}/restaurant`,
+    `http://127.0.0.1:${PORT}/restaurants`,
     { name: newRestaurantName }
   );
   t.equal(
@@ -117,14 +117,14 @@ test('End-points /restaurant basic operations', async t => {
   );
   t.ok(
     ajv.validate(
-      require('./schemas/restaurant/post/201.json'),
+      require('./schemas/restaurants/resource/post/201.json'),
       createRestaurantResponse.body
     ),
     '/restaurant response should match its json-schema when created'
   );
 
   const createRestaurantFailResponse = await POST(
-    `http://127.0.0.1:${PORT}/restaurant`,
+    `http://127.0.0.1:${PORT}/restaurants`,
     { illegalBody: `測試新建商店${new Date().getTime()}` }
   );
   t.equal(
@@ -134,7 +134,7 @@ test('End-points /restaurant basic operations', async t => {
   );
   t.ok(
     ajv.validate(
-      require('./schemas/restaurant/post/400.json'),
+      require('./schemas/restaurants/resource/post/400.json'),
       createRestaurantFailResponse.body
     ),
     '/restaurant response should match its json-schema when creating fail'
@@ -142,28 +142,28 @@ test('End-points /restaurant basic operations', async t => {
 
   // CRUD: Read
   const readRestaurantResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
+    `http://127.0.0.1:${PORT}/restaurants/${createRestaurantResponse.body.restaurantId}`
   );
   t.equal(
     readRestaurantResponse.statusCode,
     HTTPStatus.OK,
-    '/restaurant/<restaurantId> should return 200 if resource exist'
+    '/restaurants/<restaurantId> should return 200 if resource exist'
   );
   t.equal(
     readRestaurantResponse.body.name,
     newRestaurantName,
-    '/restaurant/<restaurantId> should return response which matches the same name just created'
+    '/restaurants/<restaurantId> should return response which matches the same name just created'
   );
   t.ok(
     ajv.validate(
-      require('./schemas/restaurant/get/200.json'),
+      require('./schemas/restaurants/resource/get/200.json'),
       readRestaurantResponse.body
     ),
     '/restaurant response should match its json-schema'
   );
 
   const readRestaurantNotFoundResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID`
+    `http://127.0.0.1:${PORT}/restaurants/ILLEGAL_ID`
   );
   t.equal(
     readRestaurantNotFoundResponse.statusCode,
@@ -174,7 +174,7 @@ test('End-points /restaurant basic operations', async t => {
   // CRUD: Update
   const updatedRestaurantName = `測試更新商店${new Date().getTime()}`;
   const updateRestaurantResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${createRestaurantResponse.body.restaurantId}`,
     { name: updatedRestaurantName }
   );
   t.equal(
@@ -184,23 +184,23 @@ test('End-points /restaurant basic operations', async t => {
   );
 
   const readUpdatedRestaurantResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
+    `http://127.0.0.1:${PORT}/restaurants/${createRestaurantResponse.body.restaurantId}`
   );
   t.equal(
     readUpdatedRestaurantResponse.body.name,
     updatedRestaurantName,
-    '/restaurant/<restaurantId> should return response which matches the same name just updated'
+    '/restaurants/<restaurantId> should return response which matches the same name just updated'
   );
   t.ok(
     ajv.validate(
-      require('./schemas/restaurant/get/200.json'),
+      require('./schemas/restaurants/resource/get/200.json'),
       readUpdatedRestaurantResponse.body
     ),
     '/restaurant response just updated should match json-schema'
   );
 
   const updateWithWrongTypeResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${createRestaurantResponse.body.restaurantId}`,
     { name: 5566 }
   );
   t.equal(
@@ -210,7 +210,7 @@ test('End-points /restaurant basic operations', async t => {
   );
 
   const updateWithGivenFieldsWereNotAcceptedResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${createRestaurantResponse.body.restaurantId}`,
     { fieldDoesntExisted: 'fakedata' }
   );
   t.equal(
@@ -220,7 +220,7 @@ test('End-points /restaurant basic operations', async t => {
   );
 
   const updateWithEmptyBodyResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${createRestaurantResponse.body.restaurantId}`
+    `http://127.0.0.1:${PORT}/restaurants/${createRestaurantResponse.body.restaurantId}`
   );
   t.equal(
     updateWithEmptyBodyResponse.statusCode,
@@ -234,7 +234,7 @@ test('End-points /restaurant basic operations', async t => {
   t.end();
 });
 
-test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
+test('End-points /restaurants/<restaurantId>/dish basic operations', async t => {
   // arrange
   const PORT = 3001;
   const server = new Server();
@@ -242,7 +242,7 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
   await createTestingDb();
 
   const createRestaurantResponse = await POST(
-    `http://127.0.0.1:${PORT}/restaurant`,
+    `http://127.0.0.1:${PORT}/restaurants`,
     {
       name: '測試小吃店',
       location: {
@@ -284,7 +284,7 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
 
   // CRUD: Read
   const readDishesResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dishes`
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes`
   );
   t.equal(
     readDishesResponse.statusCode,
@@ -300,7 +300,7 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
   );
 
   const readDishesThatDoesntExistesResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/ILLEGAL_ID/dishes`
+    `http://127.0.0.1:${PORT}/restaurants/ILLEGAL_ID/dishes`
   );
   t.equal(
     readDishesThatDoesntExistesResponse.statusCode,
@@ -310,14 +310,14 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
 
   // CRUD: Create
   // const createDishResponse = await POST(
-  //   `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish`
+  //   `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes`
   // );
 
   const firstDishId = readDishesResponse.body.shift()._id;
 
   // CRUD: Create
   const createDishResponse = await POST(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish`,
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes`,
     {
       name: '綜合測試粥',
       price: 100,
@@ -330,73 +330,73 @@ test('End-points /restaurant/<restaurantId>/dish basic operations', async t => {
     '/restaurants/<id>/dish should return 201 when dish was created'
   );
   const readFromDishJustCreatedResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes/${createDishResponse.body.dishId}`
   );
   t.equal(
     readFromDishJustCreatedResponse.statusCode,
     HTTPStatus.OK,
-    '/restaurants/<id>/dish/<id> should return 200'
+    '/restaurants/<id>/dishes/<id> should return 200'
   );
   t.ok(
     ajv.validate(
-      require('./schemas/dish/get/200.json'),
+      require('./schemas/dishes/resource/get/200.json'),
       readFromDishJustCreatedResponse.body
     ),
-    '/restaurants/<id>/dish/<id> should match its json-schema'
+    '/restaurants/<id>/dishes/<id> should match its json-schema'
   );
 
   // CRUD: Read
   const readDishResponse = await GET(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes/${firstDishId}`
   );
   t.equal(
     readDishResponse.statusCode,
     HTTPStatus.OK,
-    '/restaurants/<id>/dish/<id> should return 200'
+    '/restaurants/<id>/dishes/<id> should return 200'
   );
   t.ok(
-    ajv.validate(require('./schemas/dish/get/200.json'), readDishResponse.body),
-    '/restaurants/<id>/dish/<id> should match its json-schema'
+    ajv.validate(require('./schemas/dishes/resource/get/200.json'), readDishResponse.body),
+    '/restaurants/<id>/dishes/<id> should match its json-schema'
   );
 
   // CRUD: Update
   const updateDishWithCorrectPropertiesResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes/${createDishResponse.body.dishId}`,
     { name: '綜合測試更新粥', price: 99 }
   );
   t.equal(
     updateDishWithCorrectPropertiesResponse.statusCode,
     HTTPStatus.OK,
-    '/restaurants/<id>/dish/<id> should return 200 when updated success'
+    '/restaurants/<id>/dishes/<id> should return 200 when updated success'
   );
 
   const updateDishWithWrongTypedPropertyResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes/${createDishResponse.body.dishId}`,
     { name: '綜合測試錯誤粥', price: '給一個錯誤的型別' }
   );
   t.equal(
     updateDishWithWrongTypedPropertyResponse.statusCode,
     HTTPStatus.BAD_REQUEST,
-    '/restaurants/<id>/dish/<id> should return 400 when updated with wrong-typed property'
+    '/restaurants/<id>/dishes/<id> should return 400 when updated with wrong-typed property'
   );
 
   const updateDishWithUnrelatedPropertyResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${createDishResponse.body.dishId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes/${createDishResponse.body.dishId}`,
     { unrelatedProperty: '給定一個無關的屬性' }
   );
   t.equal(
     updateDishWithUnrelatedPropertyResponse.statusCode,
     HTTPStatus.BAD_REQUEST,
-    '/restaurants/<id>/dish/<id> should return 400 when updated with unrelated property'
+    '/restaurants/<id>/dishes/<id> should return 400 when updated with unrelated property'
   );
 
   const updateWithEmptyBodyResponse = await PUT(
-    `http://127.0.0.1:${PORT}/restaurant/${tempRestaurantId}/dish/${firstDishId}`,
+    `http://127.0.0.1:${PORT}/restaurants/${tempRestaurantId}/dishes/${firstDishId}`,
   );
   t.equal(
     updateWithEmptyBodyResponse.statusCode,
     HTTPStatus.BAD_REQUEST,
-    '/restaurants/<id>/dish/<id> should return 400 if request body is empty'
+    '/restaurants/<id>/dishes/<id> should return 400 if request body is empty'
   );
 
   // teardown

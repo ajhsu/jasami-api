@@ -33,7 +33,7 @@ export const getRestaurtantById = async (req, res, next) => {
 export const addRestaurtant = async (req, res, next) => {
   // json-schema validate
   if (
-    !ajv.validate(require('../schemas/restaurant/post/request.json'), req.body)
+    !ajv.validate(require('../schemas/restaurants/resource/post/request.json'), req.body)
   ) {
     res
       .status(HTTPStatus.BAD_REQUEST)
@@ -82,7 +82,7 @@ export const updateRestaurtantById = async (req, res, next) => {
   }
   // json-schema validate
   if (
-    !ajv.validate(require('../schemas/restaurant/put/request.json'), req.body)
+    !ajv.validate(require('../schemas/restaurants/resource/put/request.json'), req.body)
   ) {
     res
       .status(HTTPStatus.BAD_REQUEST)
@@ -105,7 +105,7 @@ export const updateRestaurtantById = async (req, res, next) => {
   res.status(HTTPStatus.OK).json({ restaurantId });
 };
 
-// GET /restaurant/<id>/dishes
+// GET /restaurants/<id>/dishes
 export const getAllDishesByRestaurantId = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
   try {
@@ -118,7 +118,7 @@ export const getAllDishesByRestaurantId = async (req, res, next) => {
     res.status(HTTPStatus.NOT_FOUND).json({});
   }
 };
-// GET /restaurant/<id>/dish/<id>
+// GET /restaurants/<id>/dishes/<id>
 export const getDishByRestaurantIdAndDishId = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
   const dishId = req.params.dishId;
@@ -135,11 +135,11 @@ export const getDishByRestaurantIdAndDishId = async (req, res, next) => {
     res.status(HTTPStatus.NOT_FOUND).json({});
   }
 };
-// POST /restaurant/<id>/dish
+// POST /restaurants/<id>/dishes
 export const addDishByRestaurantId = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
   // json-schema validate
-  if (!ajv.validate(require('../schemas/dish/post/request.json'), req.body)) {
+  if (!ajv.validate(require('../schemas/dishes/resource/post/request.json'), req.body)) {
     res
       .status(HTTPStatus.BAD_REQUEST)
       .json({ errors: ajv.errors.map(e => e.message) });
@@ -163,7 +163,7 @@ export const addDishByRestaurantId = async (req, res, next) => {
     );
   res.status(HTTPStatus.CREATED).json({ dishId: newDishId });
 };
-// PUT /restaurant/<id>/dish/<id>
+// PUT /restaurants/<id>/dishes/<id>
 export const updateDishByRestaurantIdAndDishId = async (req, res, next) => {
   const restaurantId = req.params.restaurantId;
   const dishId = req.params.dishId;
@@ -182,7 +182,7 @@ export const updateDishByRestaurantIdAndDishId = async (req, res, next) => {
       return;
     }
     // json-schema validate
-    if (!ajv.validate(require('../schemas/dish/put/request.json'), req.body)) {
+    if (!ajv.validate(require('../schemas/dishes/resource/put/request.json'), req.body)) {
       res
         .status(HTTPStatus.BAD_REQUEST)
         .json({ errors: ajv.errors.map(e => e.message) });
