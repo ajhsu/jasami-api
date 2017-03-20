@@ -9,7 +9,7 @@ import requestPromise from 'request-promise';
 import HTTPStatus from 'http-status';
 import db from './db-manager';
 import { mongodbConfig } from '../config';
-import { GET, POST, PUT } from './utils/restful-test';
+import { GET, POST, PUT } from './utils/restful-request';
 import {
   createTestingDb,
   dropTestingDb,
