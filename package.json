@@ -19,7 +19,7 @@
     "stop:prod": "./node_modules/.bin/pm2 delete ecosystem.config.js",
     "log": "./node_modules/.bin/pm2 logs 'jasami-api'",
     "pretest": "npm run build",
-    "test": "./node_modules/.bin/tape -r ./dist/**/*.spec.js | ./node_modules/.bin/tap-spec"
+    "test": "./node_modules/.bin/tape 'dist/**/*.spec.js' | ./node_modules/.bin/tap-spec"
   },
   "dependencies": {
     "body-parser": "^1.17.1",
